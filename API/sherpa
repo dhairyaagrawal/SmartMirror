@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+LPURPLE='\033[0;35m'
+NC='\033[0m' # No Color
+
+: '
+Black        0;30     Dark Gray     1;30
+Red          0;31     Light Red     1;31
+Green        0;32     Light Green   1;32
+Brown/Orange 0;33     Yellow        1;33
+Blue         0;34     Light Blue    1;34
+Purple       0;35     Light Purple  1;35
+Cyan         0;36     Light Cyan    1;36
+Light Gray   0;37     White         1;37
+'
+
+case "$1" in
+    help|-h|--help)
+		echo " "
+		echo -e "${CYAN}========================================================================${NC}"
+		echo -e "${CYAN}||                                                                    ||${NC}"
+		echo -e "${CYAN}|| [sherpa] transport scripts to interface with the Smart Mirror API  ||${NC}"
+		echo -e "${CYAN}||                                                                    ||${NC}"
+		echo -e "${CYAN}========================================================================${NC}"
+		echo " "
+		echo "Usage: sherpa [options] [arguments]"
+		echo " "
+		echo -e "${GREEN}OPTIONS:${NC}"
+		echo " "
+		echo "help, -h, --help           sherpa manual"
+		echo "init, -i                   formats the current directory to act as a sherpa lobby"
+		echo "                           -  A sherpa lobby contains a .metadata.json file and"
+		echo "                              a .guests file."
+		echo "                           -  the .metadata.json file contains the data the"
+		echo "                              webserver needs to display the widget info on"
+		echo "                              the configuration page"
+		echo "                           -  the .guests file contains the names of the"
+		echo "                              files which will be zipped and sent over to"
+		echo "                              Pi. These should be all the project files"
+		echo "                              needed to make your widget function"
+		echo " "
+		echo "add, -a filename(s)        adds the specified file names to the .guests file"
+		echo "rem, -r                    removes files from the .guests file"
+		echo "who, -w                    list the project files that will be shipped to the Pi"
+		echo "ship, -s                   zips files in the .guests file and sends them to the Pi"
+		echo " "
+		exit 0
+		;;
+    ship|-s)
+		# ZIP files in the .guests file and ship them over to the Raspberry Pi
+
+		if [ ! -f "./.guests" ]; then # Check for .guests file
+		    echo -e "${RED}No .guests file in this directory!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
+		    exit 1
+		fi
+
+		IFS=$'\n' files=($(cat "$path/.guests"))
+		for i in $(seq ${#files[*]}); do
+		    [[ ${files[$i-1]} = $name ]] && echo "${files[$i]}"
+		done
+
+		tar -zcvf guests.tar.gz ${files[@]} .metadata.json
+
+		# Establish SSH connection
+
+		rm guests.tar.gz
+		;;
+    add|-a)
+		if [ ! -f "./.guests" ]; then # Check for .guests file
+		    echo -e "${RED}No .guests file in this directory!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
+		    exit 1
+		fi
+
+		# Add the selected files to the .guests file
+		for var in "$@"
+		do
+		    if [ "$var" != "add" ] && [ "$var" != "-a" ]; then # Skip over 'add' argument
+		    	if [ ! -f "$var" ]; then # Ensure file actually exists
+		    		echo -e "${RED}ERROR: $var file does not exist!${NC}"
+		    		exit 1
+		    	fi
+		    	grep -q -x -F "$var" .guests || echo "$var" >> .guests # Don't add the same file twice
+		    fi
+		done
+		
+		;;
+	rem|-r)
+		if [ ! -f "./.guests" ]; then # Check for .guests file
+		    echo -e "${RED}No .guests file in this directory!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
+		    exit 1
+		fi
+
+		# Remove the selected files to the .guests file
+		for var in "$@"
+		do
+		    if [ "$var" != "rem" ] && [ "$var" != "-r" ]; then
+		    	test=$(sed "/$var/d" ".guests") # Weird work around for sed not altering hidden files
+		    	echo "$test" > .guests
+		    fi
+		done
+		
+		;;
+	init|-i)
+		# Initialize the current directory as a sherpa lobby
+		touch .guests
+		touch .metadata.json
+
+		# Create new metadata.json object and .guests file
+		read -p "Enter widget name: " projname
+		read -p "Enter your name: " creator
+
+		read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
+		echo "{" > .metadata.json
+		echo "  \"widget_name\": \"$projname\"," >> .metadata.json
+		echo "  \"creator_name\": \"$creator\"" >> .metadata.json
+		echo "}" >> .metadata.json
+		
+		;;
+	who|-w)
+		if [ ! -f "./.guests" ]; then # Check for .guests file
+		    echo -e "${RED}No .guests file in this directory!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
+		    exit 1
+		fi
+
+		echo " "
+		echo -e "${CYAN}Current known project files:${NC}" 
+		cat .guests
+		;;	
+esac
+
