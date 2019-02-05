@@ -54,12 +54,12 @@ case "$1" in
 
 		if [ ! -f "./.guests" ]; then # Check for .guests file
 		    echo -e "${RED}No .guests file in this directory!${NC}"
-		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using sherpa commands${NC}"
 		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
 		    exit 1
 		fi
 
-		IFS=$'\n' files=($(cat "$path/.guests"))
+		IFS=$'\n' files=($(cat "./.guests"))
 		for i in $(seq ${#files[*]}); do
 		    [[ ${files[$i-1]} = $name ]] && echo "${files[$i]}"
 		done
@@ -67,13 +67,17 @@ case "$1" in
 		tar -zcvf guests.tar.gz ${files[@]} .metadata.json
 
 		# Establish SSH connection
+		#ssh RyanDevlin@10.0.0.73
+
+		# Establish SCP connection
+		scp guests.tar.gz RyanDevlin@10.0.0.73:"/Users/RyanDevlin/Documents/College/Senior\\ Year/Semester\\ 2/Senior\\ Design/SmartMirror/API/mock_pi/usr/"
 
 		rm guests.tar.gz
 		;;
     add|-a)
 		if [ ! -f "./.guests" ]; then # Check for .guests file
 		    echo -e "${RED}No .guests file in this directory!${NC}"
-		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using sherpa commands${NC}"
 		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
 		    exit 1
 		fi
@@ -94,7 +98,7 @@ case "$1" in
 	rem|-r)
 		if [ ! -f "./.guests" ]; then # Check for .guests file
 		    echo -e "${RED}No .guests file in this directory!${NC}"
-		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using sherpa commands${NC}"
 		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
 		    exit 1
 		fi
@@ -129,7 +133,7 @@ case "$1" in
 	who|-w)
 		if [ ! -f "./.guests" ]; then # Check for .guests file
 		    echo -e "${RED}No .guests file in this directory!${NC}"
-		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using 'sherpa ship'!${NC}"
+		    echo -e "${RED}Be sure to navigate to the proper directory or use 'sherpa init' before using sherpa commands${NC}"
 		    echo -e "${RED}Use 'sherpa help' for more options${NC}"
 		    exit 1
 		fi
@@ -137,6 +141,11 @@ case "$1" in
 		echo " "
 		echo -e "${CYAN}Current known project files:${NC}" 
 		cat .guests
-		;;	
+		;;
+	*)
+		echo " "
+		echo -e "${RED}ERROR: Unknown arguement${NC}"
+		echo -e "${RED}User 'sherpa help' for assistance${NC}"
+		;;
 esac
 
