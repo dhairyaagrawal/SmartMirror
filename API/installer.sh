@@ -49,51 +49,110 @@ while true; do
     esac
 done
 
-# Gather info
-read -p "Please enter the name (including spaces) of your home wifi network: " ssid
+while true; do
+    read -p "Is your network a home or enterprise network? [h/e]: " he
+    case $he in
+        [Hh]* ) break;;
+        [Ee]* ) break;;
+        * ) echo -e "${RED}\nPlease answer h or e\n${NC}";;
+    esac
+done
+
+if [[ "$he" == "h" || "$he" == "H" ]]; then
+	# Home WiFi
+	read -p "Please enter the name (including spaces) of your home wifi network: " ssid
+
+	echo ""
+	# Get password
+	echo "Please enter the password for your network"
+	echo -n Password: 
+	read -s password
+else
+	# Enterprise WiFi
+	read -p "Please enter the name (including spaces) of your wifi network: " ssid
+	read -p "Please enter the usernname (including spaces) for your wifi network: " uname
+
+	echo ""
+	# Get password
+	echo "Please enter the password for your network"
+	echo -n Password: 
+	read -s password
+fi
 
 echo ""
-# Get password
-echo "Please enter the password for your network"
-echo -n Password: 
-read -s password
-
 echo ""
-echo "ssid: $ssid"
-echo "Password: $password"
-echo ""
-
-echo "Configuring Raspberry Pi...."
-echo ""
+echo -e "${LPURPLE}Configuring Raspberry Pi....${NC}"
 echo -e "${GREEN}Please connect to the TARS WiFi Network.${NC}"
 echo -e "${GREEN}This should be called: 'TARSSmartMirror'${NC}"
 while true; do
-    read -p "Are you connected to the TARS Network? [y/n]: " yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
-    esac
+	while true; do
+	    read -p "Do you wish to continue? [y/n]: " yn
+	    case $yn in
+	        [Yy]* ) break;;
+	        [Nn]* ) exit;;
+	        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+	    esac
+	done
+
+	if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	    # ...
+	    echo "Error: I haven't programmed that path yet :("
+	elif [[ "$OSTYPE" == "darwin"* ]]; then
+	    # Mac OSX
+	    check=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}')
+
+	    if [ "$check" != "TARSSmartMirror" ]; then
+	    	echo -e "${RED}ERROR: Please connect to the 'TARSSmartMirror' WiFi network.${NC}"
+	    else
+	    	break
+	    fi
+	fi
 done
+
 echo ""
 echo "Please enter the passphrase for your Pi (listed in your intallation instructions)"
 
-# SSH into the Pi
-ssh pi@10.0.0.5 /bin/bash << EOF
-if grep -q '\<$ssid\>' /etc/wpa_supplicant/wpa_supplicant.conf; then
-  echo "ERROR: the network $ssid already is configured in the Pi."
-  echo "If you are still having connectivity issues please see instructions for trouble-shooting"
-  exit
-else
-  echo "" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  echo "network={" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  echo "        ssid=\"$ssid\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  echo "        psk=\"$password\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  echo "        key_mgmt=WPA-PSK" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  echo "}" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
-  exit
-fi
+if [[ "$he" == "h" || "$he" == "H" ]]; then
+	# Home WiFi
+	# SSH into the Pi
+	ssh pi@10.0.0.5 /bin/bash << EOF
+	if grep -q '\<$ssid\>' /etc/wpa_supplicant/wpa_supplicant.conf; then
+	  echo "ERROR: the network $ssid already is configured in the Pi."
+	  echo "If you are still having connectivity issues please see instructions for trouble-shooting"
+	  exit
+	else
+	  echo "" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "network={" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        ssid=\"$ssid\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        psk=\"$password\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        key_mgmt=WPA-PSK" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "}" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  exit
+	fi
 EOF
+	
+else
+	# Enterprise WiFi
+	# SSH into the Pi
+	ssh pi@10.0.0.5 /bin/bash << EOF
+	if grep -q '\<$ssid\>' /etc/wpa_supplicant/wpa_supplicant.conf; then
+	  echo "ERROR: the network $ssid already is configured in the Pi."
+	  echo "If you are still having connectivity issues please see instructions for trouble-shooting"
+	  exit
+	else
+	  echo "" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "network={" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        ssid=\"$ssid\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        key_mgmt=WPA-EAP" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        identity=\"$uname\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        psk=\"$password\"" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        disabled=0" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "        priority=1" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  echo "}" | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null
+	  exit
+	fi
+fi
+
 
 #echo "" >> /etc/wpa_supplicant/wpa_supplicant.conf
 #echo "network={" >> /etc/wpa_supplicant/wpa_supplicant.conf
