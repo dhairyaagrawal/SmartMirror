@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="main_window.css">
+    <link rel="stylesheet" type="text/css" href="clock.css">
+    <link rel="stylesheet" type="text/css" href="clock.css">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,400i,700,700i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Arvo:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,700" rel="stylesheet">
+  </head>
+  <body>
+    <div class="window" id="window_border">
+      <div class="main_content">
+        <div class="one">Stocks / Crypto</div>
+        <div class="two">
+            <div class="day">
+                <div id="curr_day">Mon</div>
+            </div>
+            <div class="date" id="clock_window">
+                <span class="clock"></span>
+            </div>
+            <div class="ampm">
+                <div id="curr_ampm">PM</div>
+            </div>
+        </div>
+        <div class="three">Weather</div>
+        <div class="four">Music</div>
+        <div class="five">
+            <div id="stat_window">
+              <div id="cpu_load">
+                <canvas id="cpu_canvas" width="220" height="30"></canvas>
+                <h3 id="cpu_load_text">CPU: 00.00%</h3>
+              </div>
+              <div id="mem_load">
+                <canvas id="mem_canvas" width="220" height="30"></canvas>
+                <h3 id="mem_load_text">MEM: 00.00%</h3>
+              </div>
+            </div>
+        </div>
+        <div class="six">Calendar</div>
+      </div>
+    </div>
+    <!-- Execute Page Scripts -->
+    <script type="text/javascript" src="bundle.js"></script>
+    <!--<script type="text/javascript" src="./js/smoothie.js"></script>
+    <script type="text/javascript" src="./js/diagnostics.js"></script>
+    <script type="text/javascript" src="./js/py_stats.js"></script>
+    <script type="text/javascript" src="./js/clock.js"></script>
+    <script type="text/javascript" src="./js/core.js"></script>
+    <script type="text/javascript" src="./js/widget1.js"></script>-->
+  </body>
+</html>

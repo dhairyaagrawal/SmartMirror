@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Simulated System load info
+# Generates random numbers and modifies the system.json file
+
+while true
+do
+	cpu=$(awk -v min=3 -v max=100 'BEGIN{srand(); print min+rand()*(max-min+1)}')
+	mem=$(awk -v min=3 -v max=100 'BEGIN{srand(); print min+rand()*(max-min+1)}')
+	jsonStr=$(cat system.json)
+
+	jq '.cpuload = $cpu' --arg cpu "$cpu" <<<"$jsonStr" > system.json
+	sleep 1
+	jq '.memuse = $mem' --arg mem "$mem" <<<"$jsonStr" > system.json
+
+done
