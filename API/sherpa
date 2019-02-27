@@ -17,6 +17,7 @@ Cyan         0;36     Light Cyan    1;36
 Light Gray   0;37     White         1;37
 '
 
+proj_path=/home/pi/tars
 case "$1" in
     help|-h|--help)
 		echo " "
@@ -64,15 +65,40 @@ case "$1" in
 		    [[ ${files[$i-1]} = $name ]] && echo "${files[$i]}"
 		done
 
-		tar -zcvf guests.tar.gz ${files[@]} .metadata.json
+		tar -zcvf guests.tar.gz ${files[@]} .metadata.json bundle.js
 
 		# Establish SCP connection
-		scp guests.tar.gz RyanDevlin@10.186.126.118:"/Users/RyanDevlin/Documents/College/Senior\\ Year/Semester\\ 2/Senior\\ Design/SmartMirror/API/mock_pi/usr/"
+		scp guests.tar.gz pi@10.0.0.5:"~/"
+
+		./bundle # HERE WE MAKE AN ASSUMPTION: the user should only be able to sherpa init in the node directory. Add this later.
 
 		# Establish SSH connection
-		ssh pi@10.0.0.33
+		ssh pi@10.0.0.5 /bin/bash << 'EOF'
+		cd ~/
+		sudo mv guests.tar.gz ~/tars/widgets/
+		cd ~/tars/widgets/
+		loc=$(sudo wc -l ~/tars/widgets/legends | grep -o [0-9+])
+		loc=$((loc+1))
+
+		if [[ $loc -gt 8 ]]; then
+			echo ""
+			echo "ERROR: All 8 widget slots filled!"
+			echo "Please use Sherpa del to delete one widget before adding another."
+			sudo rm guests.tar.gz
+			exit
+		fi
+
+		sudo ./summit "./widget$loc"
+EOF
 
 		rm guests.tar.gz
+		echo ""
+		echo -e "${LPURPLE}==> Installation finished! <==${NC}"
+		echo ""
+		echo -e "${GREEN}Be sure to check above for error messages!${NC}"
+		;;
+	del|-d)
+		
 		;;
     add|-a)
 		if [ ! -f "./.guests" ]; then # Check for .guests file
