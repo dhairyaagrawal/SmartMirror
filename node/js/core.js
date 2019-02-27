@@ -78,10 +78,44 @@ alpha.data.intraday(`aapl`).then(data => {
   const polished = alpha.util.polish(data);
   var date = new Date(Date.now() - 120000);
   date.setSeconds(0,0);
+  var hour = date.getHours();
+  var min = date.getMinutes();
+  var day = date.getDay();
+  var dotw = date.getUTCDay();
+  console.log("Hours: " + hour);
+
+  // Check time and date
+  // Stock market isn't open weekends
+  // Also only open from 9:30am-4:00pm
+  if (dotw == 0 || dotw == 6) {
+    date.setHours(16);
+    date.setMinutes(0);
+    date.setDate(day - 1);
+    console.log("FIX: " + data);
+  } else if (hour > 16) {
+    date.setHours(16);
+    date.setMinutes(0);
+    console.log("FIX: " + data);
+  } else if (hour < 10 && min < 30) {
+    date.setHours(16);
+    date.setMinutes(0);
+    date.setDate(day - 1);
+    console.log("FIX: " + data);
+  }
 
   date = date.toISOString();
-  console.log(date);
-  console.log("APPLE: " + polished.data[date].open);
+  console.log("TEST: " + date);
+  //console.log(JSON.stringify(polished));
+
+  // Catch for when the MAN ranomly closes the stock market on unpredictable holidays
+  // Why must I add all this code please open the stock market 24/7 thank u
+  if (polished.data[date].open == undefined) {
+    console.log("ERROR: the powers at be have decided to close the stock market. It is unclear why, in this age of electronic trading, we must still close the market, alas my peasant self has no control over this sad issue.");
+  } else {
+    console.log("APPLE: " + polished.data[date].open);
+    var price = polished.data[date].open;
+    document.getElementById("value_text").innerHTML = "$" + (Math.floor(price * 100) / 100 );
+  }
 });
 
 setInterval(function() {
@@ -89,9 +123,43 @@ setInterval(function() {
     const polished = alpha.util.polish(data);
     var date = new Date(Date.now() - 120000);
     date.setSeconds(0,0);
+    var hour = date.getHours();
+    var min = date.getMinutes();
+    var day = date.getDay();
+    var dotw = date.getUTCDay();
+    console.log("Hours: " + hour);
+
+    // Check time and date
+    // Stock market isn't open weekends
+    // Also only open from 9:30am-4:00pm
+    if (dotw == 0 || dotw == 6) {
+      date.setHours(16);
+      date.setMinutes(0);
+      date.setDate(day - 1);
+      console.log("FIX: " + data);
+    } else if (hour > 16) {
+      date.setHours(16);
+      date.setMinutes(0);
+      console.log("FIX: " + data);
+    } else if (hour < 10 && min < 30) {
+      date.setHours(16);
+      date.setMinutes(0);
+      date.setDate(day - 1);
+      console.log("FIX: " + data);
+    }
 
     date = date.toISOString();
-    console.log(date);
-    console.log("MICROSOFT: " + polished.data[date].open);
+    console.log("TEST: " + date);
+    //console.log(JSON.stringify(polished));
+
+    // Catch for when the MAN ranomly closes the stock market on unpredictable holidays
+    // Why must I add all this code please open the stock market 24/7 thank u
+    if (polished.data[date].open == undefined) {
+      console.log("ERROR: the powers at be have decided to close the stock market. It is unclear why, in this age of electronic trading, we must still close the market, alas my peasant self has no control over this sad issue.");
+    } else {
+      console.log("APPLE: " + polished.data[date].open);
+      var price = polished.data[date].open;
+      document.getElementById("value_text").innerHTML = "$" + (Math.floor(price * 100) / 100 );
+    }
   });
 }, 240000);

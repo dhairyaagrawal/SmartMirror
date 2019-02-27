@@ -194,10 +194,44 @@ alpha.data.intraday(`aapl`).then(data => {
   const polished = alpha.util.polish(data);
   var date = new Date(Date.now() - 120000);
   date.setSeconds(0,0);
+  var hour = date.getHours();
+  var min = date.getMinutes();
+  var day = date.getDay();
+  var dotw = date.getUTCDay();
+  console.log("Hours: " + hour);
+
+  // Check time and date
+  // Stock market isn't open weekends
+  // Also only open from 9:30am-4:00pm
+  if (dotw == 0 || dotw == 6) {
+    date.setHours(16);
+    date.setMinutes(0);
+    date.setDate(day - 1);
+    console.log("FIX: " + data);
+  } else if (hour > 16) {
+    date.setHours(16);
+    date.setMinutes(0);
+    console.log("FIX: " + data);
+  } else if (hour < 10 && min < 30) {
+    date.setHours(16);
+    date.setMinutes(0);
+    date.setDate(day - 1);
+    console.log("FIX: " + data);
+  }
 
   date = date.toISOString();
-  console.log(date);
-  console.log("APPLE: " + polished.data[date].open);
+  console.log("TEST: " + date);
+  //console.log(JSON.stringify(polished));
+
+  // Catch for when the MAN ranomly closes the stock market on unpredictable holidays
+  // Why must I add all this code please open the stock market 24/7 thank u
+  if (polished.data[date].open == undefined) {
+    console.log("ERROR: the powers at be have decided to close the stock market. It is unclear why, in this age of electronic trading, we must still close the market, alas my peasant self has no control over this sad issue.");
+  } else {
+    console.log("APPLE: " + polished.data[date].open);
+    var price = polished.data[date].open;
+    document.getElementById("value_text").innerHTML = "$" + (Math.floor(price * 100) / 100 );
+  }
 });
 
 setInterval(function() {
@@ -205,10 +239,42 @@ setInterval(function() {
     const polished = alpha.util.polish(data);
     var date = new Date(Date.now() - 120000);
     date.setSeconds(0,0);
+    var hour = date.getHours();
+    var min = date.getMinutes();
+    var day = date.getDay();
+    var dotw = date.getUTCDay();
+    console.log("Hours: " + hour);
+
+    // Check time and date
+    // Stock market isn't open weekends
+    // Also only open from 9:30am-4:00pm
+    if (dotw == 0 || dotw == 6) {
+      date.setHours(16);
+      date.setMinutes(0);
+      date.setDate(day - 1);
+      console.log("FIX: " + data);
+    } else if (hour > 16) {
+      date.setHours(16);
+      date.setMinutes(0);
+      console.log("FIX: " + data);
+    } else if (hour < 10 && min < 30) {
+      date.setHours(16);
+      date.setMinutes(0);
+      date.setDate(day - 1);
+      console.log("FIX: " + data);
+    }
 
     date = date.toISOString();
-    console.log(date);
-    console.log("MICROSOFT: " + polished.data[date].open);
+    console.log("TEST: " + date);
+    //console.log(JSON.stringify(polished));
+
+    // Catch for when the MAN ranomly closes the stock market on unpredictable holidays
+    // Why must I add all this code please open the stock market 24/7 thank u
+    if (polished.data[date].open == undefined) {
+      console.log("ERROR: the powers at be have decided to close the stock market. It is unclear why, in this age of electronic trading, we must still close the market, alas my peasant self has no control over this sad issue.");
+    } else {
+      console.log("APPLE: " + polished.data[date].open);
+    }
   });
 }, 240000);
 },{"./clock.js":1,"./diagnostics.js":3,"./py_stats.js":4,"./smoothie.js":5,"alphavantage":52}],3:[function(require,module,exports){
@@ -1832,8 +1898,8 @@ module.exports.AbstractLevelDOWN    = AbstractLevelDOWN
 module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./abstract-chained-batch":6,"./abstract-iterator":7,"_process":441,"xtend":9}],9:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./abstract-chained-batch":6,"./abstract-iterator":7,"_process":441,"xtend":9}],9:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -9031,8 +9097,8 @@ function _setExports(ndebug) {
 
 module.exports = _setExports(process.env.NODE_NDEBUG);
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"_process":441,"assert":322,"stream":477,"util":489}],66:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"_process":441,"assert":322,"stream":477,"util":489}],66:[function(require,module,exports){
 
 /*!
  *  Copyright 2010 LearnBoost <dev@learnboost.com>
@@ -12916,8 +12982,8 @@ CombinedStream.prototype._emitError = function(err) {
   this.emit('error', err);
 };
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./defer.js":84,"delayed-stream":88,"stream":477,"util":489}],84:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./defer.js":84,"delayed-stream":88,"stream":477,"util":489}],84:[function(require,module,exports){
 (function (process){
 module.exports = defer;
 
@@ -13205,8 +13271,8 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412}],87:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412}],87:[function(require,module,exports){
 (function (Buffer,process){
 var util              = require('util')
   , AbstractLevelDOWN = require('abstract-leveldown').AbstractLevelDOWN
@@ -13256,8 +13322,8 @@ DeferredLevelDOWN.prototype._iterator = function () {
 
 module.exports = DeferredLevelDOWN
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"_process":441,"abstract-leveldown":8,"util":489}],88:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"_process":441,"abstract-leveldown":8,"util":489}],88:[function(require,module,exports){
 var Stream = require('stream').Stream;
 var util = require('util');
 
@@ -16927,8 +16993,8 @@ module.exports = {
 
 };
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./utils":137,"assert-plus":65,"crypto":366,"http":478,"jsprim":150,"sshpk":278,"util":489}],137:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./utils":137,"assert-plus":65,"crypto":366,"http":478,"jsprim":150,"sshpk":278,"util":489}],137:[function(require,module,exports){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 var assert = require('assert-plus');
@@ -27645,8 +27711,8 @@ exports.filter = function (range, compare) {
 
 
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412}],213:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412}],213:[function(require,module,exports){
 module.exports={
   "application/1d-interleaved-parityfec": {
     "source": "iana"
@@ -48328,8 +48394,8 @@ Key._oldVersionDetect = function (obj) {
 	return ([1, 0]);
 };
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./algs":259,"./dhe":261,"./ed-compat":262,"./errors":263,"./fingerprint":264,"./formats/auto":265,"./formats/dnssec":266,"./formats/pem":268,"./formats/pkcs1":269,"./formats/pkcs8":270,"./formats/putty":271,"./formats/rfc4253":272,"./formats/ssh":274,"./formats/ssh-private":273,"./private-key":280,"./signature":281,"./utils":283,"assert-plus":65,"crypto":366}],280:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../../../../../usr/local/lib/node_modules/browserify/node_modules/is-buffer/index.js":412,"./algs":259,"./dhe":261,"./ed-compat":262,"./errors":263,"./fingerprint":264,"./formats/auto":265,"./formats/dnssec":266,"./formats/pem":268,"./formats/pkcs1":269,"./formats/pkcs8":270,"./formats/putty":271,"./formats/rfc4253":272,"./formats/ssh":274,"./formats/ssh-private":273,"./private-key":280,"./signature":281,"./utils":283,"assert-plus":65,"crypto":366}],280:[function(require,module,exports){
 // Copyright 2017 Joyent, Inc.
 
 module.exports = PrivateKey;
