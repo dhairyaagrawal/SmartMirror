@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Remove Widget?</h1>
+<h3>Widget Details</h3>
+<p>
+ 	App Name: &nbsp;&nbsp;&nbsp; {{widget.appname}}
+	<br>App Creator:&nbsp; {{widget.creator}}
+	<br>Current User: {{widget.user}}
+</p>
+
+<p>Are you sure you want to delete this app assignment {{ widget }}?</p>
+
+<form action="{% url "Users:remwidget" pk=widget.id %}" method="POST">
+  {% csrf_token %}
+
+  <input type="submit" value="Yes, delete." />
+  <a href="{% url 'Users:index'%}">No, cancel.</a>
+</form>
+
+{% endblock %}

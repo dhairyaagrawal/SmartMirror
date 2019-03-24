@@ -1,0 +1,36 @@
+<h1>Available Widgets</h1>
+{% if latest_widget_list %}
+	<ul>
+	{% for widget, details in latest_widget_list.items %}
+	<!--	<li><a>{{widget.appname}}, {{widget.user.username}}</a></li> --!>
+	 <li><a>{{widget}} - {{details.creator}} </a>
+		<br>&nbsp;&nbsp;&nbsp;{{details.description}}
+		</li>
+	{% endfor %}
+	</ul>
+	<h1>Available Users</h1>
+	{% if latest_user_list %}
+		<ul>
+		{% for user in latest_user_list %}
+		<li><a>{{user.username}}</a></li>
+		{% endfor %}
+		</ul>
+		<form method="post">
+		{% csrf_token %}
+	    	{{ form.as_p }}
+	    	<input type="submit" value="Add Widget">
+		</form>
+
+	{% else %}
+		<p>No Users Have Been Created Yet</p>
+		<ul>
+		<li><a href = "{% url 'Users:adduser' %}">Add User</a></li>
+		</ul>
+
+{% endif %}
+{% else %}
+<p>No Widgets Have Been Added Yet</p>
+{% endif %}
+
+<a href="{% url 'Users:index' %}">Return</a>
+

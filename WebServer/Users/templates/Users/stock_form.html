@@ -1,0 +1,34 @@
+<h1>Available Stocks</h1>
+{% if latest_stock_list %}
+	<ul>
+	{% for stock in latest_stock_list %}
+	<!--	<li><a>{{widget.appname}}, {{widget.user.username}}</a></li> --!>
+	 <li><a>{{stock}}</a></li>
+	{% endfor %}
+	</ul>
+	<h1>Available Users</h1>
+	{% if latest_user_list %}
+		<ul>
+		{% for user in latest_user_list %}
+		<li><a>{{user.username}}</a></li>
+		{% endfor %}
+		</ul>
+		<form method="post">
+		{% csrf_token %}
+	    	{{ form.as_p }}
+	    	<input type="submit" value="Add Stock">
+		</form>
+
+	{% else %}
+		<p>No Users Have Been Created Yet</p>
+		<ul>
+		<li><a href = "{% url 'Users:adduser' %}">Add User</a></li>
+		</ul>
+
+{% endif %}
+{% else %}
+<p>No Widgets Have Been Added Yet</p>
+{% endif %}
+
+<a href="{% url 'Users:index' %}">Return</a>
+

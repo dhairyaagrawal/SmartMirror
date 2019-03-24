@@ -1,0 +1,21 @@
+{
+	"StockTracker":
+		{
+			"appname": "StockTracker",
+			"creator": "Ryan M",
+			"description": "This app keeps track of the most popular stocks trending right now."
+		},
+	"WeatherDisplay":
+		{
+			"appname": "WeatherDisplay",
+			"creator": "Weatherman Jones",
+			"description": "This app keeps track of the weather in the users current location."
+		},
+	"TimeDisplay":
+		{
+			"appname": "Time Display",
+			"creator": "Ryan D",
+			"description": "This app displays the current time in the users current timezone."
+		}
+
+}

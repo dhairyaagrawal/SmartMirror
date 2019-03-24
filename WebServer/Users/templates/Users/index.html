@@ -1,0 +1,19 @@
+<h1>Current Users</h1>
+{% if latest_user_list  %}
+	<ul>
+	{% for user in latest_user_list %}
+	<li><a href = "{% url 'Users:detail' user.id %}">{{user.username}}</a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No users created yet</p>
+{% endif %}
+<h1>Management</h1>
+<ul>
+	<li><a href = "{% url 'Users:adduser' %}">Add User</a></li>
+</ul>
+
+<ul>
+	<li><a href = "{% url 'Users:addwidget' %}">Add Widget</a></li>
+</ul>
+

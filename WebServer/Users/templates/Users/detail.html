@@ -1,0 +1,20 @@
+<h1> {{user.username}} </h1>
+{% if error_message %}<p><strong>{{error_message}}</strong></p>{% endif %}
+{% if user.widget_set.all %}
+	{% for app in user.widget_set.all %}
+		<ul>
+		<li><a href="{% url 'Users:remwidget' app.id%}">{{app.appname}}</a></li>
+	</ul>
+
+{% endfor %}
+{% else %}
+	No apps configured for this user
+{% endif %}
+<h3>
+	<br><br>Remove this user?
+</h3>
+{% if user.id %}
+<ul>
+	<a href="{% url 'Users:remuser' user.id %}">Delete</a>
+</ul>
+{% endif %}
