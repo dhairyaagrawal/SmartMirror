@@ -23,4 +23,8 @@ urlpatterns = [
     path('<int:user_id>/set/', views.SetCurrentUser, name='set'),
     #ex /Users/remove_user
     path('<int:pk>/remove_user/', views.remUser.as_view(), name='remuser'),
+    #ex /Users/add_stock
+    path('add_stock/', views.addStock.as_view(success_url=''), name='addstock'),
+    #ex /Users/rem_stock
+    path('rem_stock/<int:pk>/', views.remStock.as_view(success_url=''), name='remstock'),
 ]

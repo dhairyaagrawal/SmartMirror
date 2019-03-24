@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
-from .models import User, Widget
+from .models import User, Widget, Stock
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 import json
@@ -34,6 +34,10 @@ class IndexView(LoginRequiredMixin,generic.ListView):
             for widget in user.widget_set.all():
                 appList.append(widget.appname)
             cur_dict['apps'] = appList
+            stockList= []
+            for stock in user.stock_set.all():
+                stockList.append(stock.get_Ticker_display())
+            cur_dict['stocks'] = stockList
             dict_of_users[user.username] = cur_dict
         with open("users.json","w") as f:
             json.dump(dict_of_users, f)
@@ -111,6 +115,26 @@ class addWidget(generic.edit.CreateView, generic.ListView):
         context['latest_user_list'] = User.objects.order_by('added_date')[::]
 
         return context
+
+class addStock(generic.edit.CreateView):
+    model = Stock
+    fields = ['Ticker', 'user']
+    def get_absolute_url(self):
+        return reverse('User:index')
+    def get_context_data(self, **kwargs):
+        context = super(addStock, self).get_context_data(**kwargs)
+        stocks = []
+        with open("stocks.txt", "r") as f:
+            stocks = f.readlines()
+        context['latest_stock_list'] = stocks
+        context['latest_user_list'] = User.objects.order_by('added_date')[::]
+        return context
+
+class remStock(generic.edit.DeleteView):
+    model= Stock
+    template_name = 'Users/delete_stock.html'
+    def get_success_url(self):
+        return reverse('Users:index')
 
 class remWidget(generic.edit.DeleteView):
     model = Widget

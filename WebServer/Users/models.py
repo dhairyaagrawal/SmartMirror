@@ -20,6 +20,17 @@ class User(models.Model):
     def get_absolute_url(self):
         return u'/Users/'
 
+available_stocks = []
+with open("stocks.txt", "r") as f:
+    available_stocks = f.readlines()
+
+class Stock(models.Model):
+    Ticker = models.CharField(max_length = 20, choices=[(str(i),available_stocks[i][:-1]) for i in range(len(available_stocks))])
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default = None)
+    def __str__(self):
+        return self.Ticker
+    def get_absolute_url(self):
+        return u'/Users/'
 
 class Widget(models.Model):
     appname=models.CharField(max_length=20)
