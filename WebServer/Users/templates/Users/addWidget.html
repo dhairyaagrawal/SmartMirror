@@ -1,0 +1,14 @@
+{% if latest_app_list  %}
+        <ul>
+        {% for app in latest_app_list %}
+	<li>{{app.appname}}</li>
+        {% endfor %}
+        </ul>
+{% else %}
+        <p>No Widgets have been created yet</p>
+{% endif %}
+
+<ul>
+	<li><a href = "{% url 'Users:index" %}>Return To Users</a></li>
+</ul>
+
