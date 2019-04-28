@@ -51,6 +51,30 @@ case "$1" in
 		exit 0
 		;;
     ship|-s)
+
+		ipaddr=$(cat ./.ip)
+		while true; do
+		    read -p "Is the IP address shown on the Mirror $ipaddr? [y/n]: " yn
+		    case $yn in
+		        [Yy]* ) break;;
+		        [Nn]* ) read -p "Enter the IP address shown on the Mirror: " ip && echo "$ip" > .ip && echo "Thank you. Please try 'sherpa ship' again." && exit;;
+		        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+		    esac
+		done
+
+		while true; do
+			echo ""
+			echo "WARNING: Once you upload this widget you will not be able to change it's name."
+			echo "Don't worry, you can still change the widget's code by using sherpa ship again."
+			echo "If you need to change the name of your widget answer no and edit the .metadata.json file."
+		    read -p "Continue? [y/n]: " yn
+		    case $yn in
+		        [Yy]* ) break;;
+		        [Nn]* ) exit;;
+		        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+		    esac
+		done
+
 		# ZIP files in the .guests file and ship them over to the Raspberry Pi
 
 		if [ ! -f "./.guests" ]; then # Check for .guests file
@@ -65,31 +89,41 @@ case "$1" in
 		    [[ ${files[$i-1]} = $name ]] && echo "${files[$i]}"
 		done
 
-		tar -zcvf guests.tar.gz ${files[@]} .metadata.json bundle.js
+		tar -zcvf guests.tar.gz ${files[@]} .metadata.json
 
 		# Establish SCP connection
-		scp guests.tar.gz pi@10.0.0.5:"~/"
+		#scp guests.tar.gz pi@10.186.132.73:"~/"
+		scp guests.tar.gz pi@"$ipaddr":"~/"
 
-		./bundle # HERE WE MAKE AN ASSUMPTION: the user should only be able to sherpa init in the node directory. Add this later.
+		#./bundle  HERE WE MAKE AN ASSUMPTION: the user should only be able to sherpa init in the node directory. Add this later.
 
 		# Establish SSH connection
-		ssh pi@10.0.0.5 /bin/bash << 'EOF'
+		#ssh pi@10.186.132.73 /bin/bash << 'EOF'
+		ssh pi@"$ipaddr" /bin/bash << 'EOF'
 		cd ~/
-		sudo mv guests.tar.gz ~/tars/widgets/
-		cd ~/tars/widgets/
-		loc=$(sudo wc -l ~/tars/widgets/legends | grep -o [0-9+])
-		loc=$((loc+1))
+		sudo mv guests.tar.gz ~/tars/node/sandbox/
+		cd ~/tars/node/
 
-		if [[ $loc -gt 8 ]]; then
-			echo ""
-			echo "ERROR: All 8 widget slots filled!"
-			echo "Please use Sherpa del to delete one widget before adding another."
-			sudo rm guests.tar.gz
-			exit
-		fi
-
-		sudo ./summit "./widget$loc"
+		sudo ./peak & exit
 EOF
+#sudo ./peak
+#		ssh pi@10.186.132.73 /bin/bash << 'EOF'
+#		cd ~/
+#		sudo mv guests.tar.gz ~/tars/widgets/
+#		cd ~/tars/widgets/
+#		loc=$(sudo wc -l ~/tars/widgets/legends | grep -o [0-9+])
+#		loc=$((loc+1))
+#
+#		if [[ $loc -gt 8 ]]; then
+#			echo ""
+#			echo "ERROR: All 8 widget slots filled!"
+#			echo "Please use Sherpa del to delete one widget before adding another."
+#			sudo rm guests.tar.gz
+#			exit
+#		fi
+#
+#		sudo ./summit "./widget$loc"
+#EOF
 
 		rm guests.tar.gz
 		echo ""
@@ -98,6 +132,41 @@ EOF
 		echo -e "${GREEN}Be sure to check above for error messages!${NC}"
 		;;
 	del|-d)
+		while true; do
+		    read -p "WARNING: You are about to delete a widget from the mirror. Continue? [y/n]: " yn
+		    case $yn in
+		        [Yy]* ) break;;
+		        [Nn]* ) exit;;
+		        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+		    esac
+		done
+
+		ipaddr=$(cat ./.ip)
+		while true; do
+		    read -p "Is the IP address shown on the Mirror $ipaddr? [y/n]: " yn
+		    case $yn in
+		        [Yy]* ) break;;
+		        [Nn]* ) read -p "Enter the IP address shown on the Mirror: " ip && echo "$ip" > .ip && echo "Thank you. Please try 'sherpa ship' again." && exit;;
+		        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+		    esac
+		done
+
+		read -p "Enter the name of the widget you want to delete: " widget
+		while true; do
+		    read -p "DELETE: Delete $widget from the mirror? [y/n]: " yn
+		    case $yn in
+		        [Yy]* ) break;;
+		        [Nn]* ) exit;;
+		        * ) echo -e "${RED}\nPlease answer y or n\n${NC}";;
+		    esac
+		done
+
+		ssh pi@"$ipaddr" "/home/pi/tars/node/purge.sh $widget"
+
+		echo ""
+		echo -e "${LPURPLE}==> $widget widget deleted! <==${NC}"
+		echo ""
+		echo -e "${GREEN}Be sure to check above for error messages!${NC}"
 		
 		;;
     add|-a)
@@ -140,19 +209,34 @@ EOF
 		
 		;;
 	init|-i)
+		# First check for a hidden sherpa_root file. This file signals that the current directory has the mirro source code files in it
+		# This is needed so that browserify can properly package the use code into the mirror system code
+		#if [ ! -f "./.sherpa_root" ]; then # Check for .sherpa_root file
+		#    echo -e "${RED}ERROR: This directory is not a TARS source directory!${NC}"
+		#    echo -e "${RED}You must only execute this command from within a directory sourced from the TARS project.${NC}"
+		#    echo -e "${RED}Please download the TARS project and directory structure before using this command.${NC}"
+		#    exit 1
+		#fi
+
 		# Initialize the current directory as a sherpa lobby
 		touch .guests
 		touch .metadata.json
+		touch .ip
 
 		# Create new metadata.json object and .guests file
 		read -p "Enter widget name: " projname
 		read -p "Enter your name: " creator
+		read -p "Enter a description for your widget: " des
+		read -p "Enter the IP address shown on the Mirror: " ip
 
 		read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
+		echo "$ip" > .ip
+
 		echo "{" > .metadata.json
-		echo "  \"widget_name\": \"$projname\"," >> .metadata.json
-		echo "  \"creator_name\": \"$creator\"" >> .metadata.json
+		echo "  \"appname\": \"$projname\"," >> .metadata.json
+		echo "  \"creator\": \"$creator\"," >> .metadata.json
+		echo "  \"description\": \"$des\"" >> .metadata.json
 		echo "}" >> .metadata.json
 		
 		;;

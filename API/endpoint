@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Discover User's MAC Address
+
+
+echo "$subnet" 

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/GUI_test copy/" pi@10.0.0.5:~/Desktop/
+cd "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/"
+#rm bundle.js
+#browserify ./js/core.js -o bundle.js
+#
+scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/js/" pi@10.0.0.5:~/tars/node/
+scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/css/" pi@10.0.0.5:~/tars/node/
+scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/bundle.js" pi@10.0.0.5:~/tars/node/
+scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/index.html" pi@10.0.0.5:~/tars/node/
+scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/main_window.css" pi@10.0.0.5:~/tars/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/clock.css" pi@10.0.0.5:~/tars/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/webserver.js" pi@10.0.0.5:~/tars/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/system.json" pi@10.0.0.5:~/tars/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/node/package.json" pi@10.0.0.5:~/Desktop/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/node/package-lock.json" pi@10.0.0.5:~/Desktop/node/
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/node/node_modules/" pi@10.0.0.5:~/Desktop/node/
+
+#scp -r "/Users/RyanDevlin/Documents/College/Senior Year/Semester 2/Senior Design/SmartMirror/node/" pi@10.0.0.5:~/tars/
